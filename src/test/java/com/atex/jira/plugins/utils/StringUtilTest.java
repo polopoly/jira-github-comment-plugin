@@ -1,36 +1,64 @@
 package com.atex.jira.plugins.utils;
 
-import static org.junit.Assert.*;
+import junit.framework.TestCase;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import com.atex.jira.plugins.utils.StringUtil;
-
-public class StringUtilTest {
-    private StringUtil test;
-
-    @Before
-    public void setUp() throws Exception {
-        test = new StringUtil();
-    }
+public class StringUtilTest extends TestCase {
 
     @Test
-    public void testGetLastStrAftSlash() {
-        assertEquals("master", test.getLastStrAftSlash("refs/heads/master"));
-        assertEquals("refsheadsmaster", test.getLastStrAftSlash("refsheadsmaster"));
-        assertEquals("", test.getLastStrAftSlash("refsheadsmaster/"));
-        assertEquals("", test.getLastStrAftSlash(""));
-        assertEquals("", test.getLastStrAftSlash(" "));
+    public void testGetLastStrAftSlashNullBlankSpace() {
+        assertNotNull(StringUtil.getLastStrAftSlash(null));
+        assertNotNull(StringUtil.getLastStrAftSlash(""));
+        assertNotNull(StringUtil.getLastStrAftSlash(" "));        
+        assertEquals("", StringUtil.getLastStrAftSlash(null));
+        assertEquals("", StringUtil.getLastStrAftSlash(""));
+        assertEquals("", StringUtil.getLastStrAftSlash(" "));
     }
     
     @Test
-    public void testParseString() {
-        assertNotNull(test.parseString(null));
-        assertNotNull(test.parseString(""));
-        assertNotNull(test.parseString(" "));
-        assertNotNull(test.parseString("abc"));
-        assertNotNull(test.parseString(" ab c "));
+    public void testGetLastStrAftSlashWithContents() {
+        assertEquals("master", StringUtil.getLastStrAftSlash("refs/heads/master"));
+        assertEquals("refsheadsmaster", StringUtil.getLastStrAftSlash("refsheadsmaster"));
+        assertEquals("", StringUtil.getLastStrAftSlash("refsheadsmaster/"));
+    }
+    
+    @Test
+    public void testParseStringNullBlankSpace() {
+        assertNotNull(StringUtil.parseString(null));
+        assertNotNull(StringUtil.parseString(""));
+        assertNotNull(StringUtil.parseString(" "));
+        assertEquals("", StringUtil.parseString(null));
+        assertEquals("", StringUtil.parseString(""));
+        assertEquals("", StringUtil.parseString(" "));        
     }
 
+    @Test
+    public void testParseStringWithContents() {
+        assertNotNull(StringUtil.parseString(" ab c "));
+        assertNotNull(StringUtil.parseString("abc"));
+    }
+
+    @Test
+    public void testParseUrlLabelNullBlankSpace() {
+        assertNotNull(StringUtil.parseUrlLabel(null, null));
+        assertNotNull(StringUtil.parseUrlLabel(null, ""));
+        assertNotNull(StringUtil.parseUrlLabel("", null));
+        assertNotNull(StringUtil.parseUrlLabel("", ""));
+        assertNotNull(StringUtil.parseUrlLabel(" ", " "));
+        assertEquals("", StringUtil.parseUrlLabel(null, null));
+        assertEquals("", StringUtil.parseUrlLabel(null, ""));
+        assertEquals("", StringUtil.parseUrlLabel("", null));
+        assertEquals("", StringUtil.parseUrlLabel("", ""));
+        assertEquals("", StringUtil.parseUrlLabel(" ", " "));
+    }
+    
+    @Test
+    public void testParseUrlLabelWithContents() {
+        assertEquals("abc", StringUtil.parseUrlLabel("abc", ""));
+        assertEquals("www.google.com", StringUtil.parseUrlLabel("", "www.google.com"));
+        assertEquals("[google|www.google.com]", StringUtil.parseUrlLabel("google", "www.google.com"));
+        
+    }
+    
 }

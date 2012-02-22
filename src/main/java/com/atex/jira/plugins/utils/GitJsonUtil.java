@@ -40,16 +40,25 @@ public class GitJsonUtil {
     
     private JSONObject gitJson;
     
-    public GitJsonUtil(String jsonText) {
+    public GitJsonUtil(String jsonText, String cropPrefix) {
         JSONParser parser =  new JSONParser();
+        int cropIndex = 0;
         try {
             String decoded = URLDecoder.decode(jsonText, ENCODING);
-            Object obj = parser.parse(decoded);
+            if (cropPrefix!=null && !cropPrefix.trim().isEmpty()) {
+                try {
+                    cropIndex = Integer.parseInt(cropPrefix);
+                } catch (NumberFormatException e) {
+                    cropIndex = cropPrefix.length();
+                }
+            }
+            String cleanStr = decoded.substring(cropIndex);
+            Object obj = parser.parse(cleanStr);
             setGitJson((JSONObject) obj);
         } catch (UnsupportedEncodingException e) {
-            logger.warn("Please ensure the string is " + ENCODING + "encoding.\n" + e);
+            logger.error("Please ensure the string is " + ENCODING + "encoding.\n" + e);
         } catch (ParseException e) {
-            logger.warn("Unable to parse the string to Json.\n" + e );
+            logger.error("Unable to parse the string to Json.\n" + e );
         }
     }
 
@@ -61,19 +70,19 @@ public class GitJsonUtil {
         this.gitJson = gitJson;
     }
 
-    public JSONObject getPusherObj() {
+    private JSONObject getPusherObj() {
         Object obj = getGitJson().get(GIT_PUSHER);
         JSONObject result = (JSONObject) obj;
         return result;    
     }
     
-    public JSONObject getRepoObj() {
+    private JSONObject getRepoObj() {
         Object obj = getGitJson().get(GIT_REPO);
         JSONObject result = (JSONObject) obj;
         return result;
     }
     
-    public JSONArray getCommitsObject() {
+    private JSONArray getCommitsObject() {
         Object obj = getGitJson().get(GIT_COMMITS);
         JSONArray result = (JSONArray) obj;
         return result;
@@ -87,10 +96,22 @@ public class GitJsonUtil {
     
     public List<Map<String, String>> getCommits() {
         List<Map<String, String>> result = new ArrayList<Map<String, String>>();
+        if (getGitJson()==null) {
+            return result;
+        }
         JSONArray commits = getCommitsObject();
+        JSONObject repo = getRepoObj() ;
+        String repoName = "";
+        if (repo!=null) {
+            repoName = StringUtil.parseString((String) repo.get(GIT_REPO_NAME));
+        }
+        String branch = StringUtil.getLastStrAftSlash((String) getGitJson().get(GIT_REPO_REF));
+
         for (Object entry : commits) {
             Map<String, String> commitInfo = new HashMap<String, String>();
             JSONObject commit = (JSONObject) entry ;
+            commitInfo.put(FIELD_REPO_NAME, repoName);
+            commitInfo.put(FIELD_BRANCH, branch);
             commitInfo.put(FIELD_COMMIT_URL, (String) commit.get(GIT_COMMIT_URL));
             commitInfo.put(FIELD_COMMIT_ID, (String) commit.get(GIT_COMMIT_ID));
             commitInfo.put(FIELD_COMMIT_AUTHOR, getAuthorString(commit.get(GIT_COMMIT_AUTHOR)));
@@ -99,13 +120,5 @@ public class GitJsonUtil {
         }
         return result;
     }
-    
-    public Map<String, Object> getPushInfo() {
-        Map<String, Object> info = new HashMap<String, Object>();
-        JSONObject repo = getRepoObj() ;
-        info.put(FIELD_REPO_NAME, repo.get(GIT_REPO_NAME));
-        info.put(FIELD_BRANCH, StringUtil.getLastStrAftSlash((String) getGitJson().get(GIT_REPO_REF)));
-        return info;
-    }
-    
+   
 }
