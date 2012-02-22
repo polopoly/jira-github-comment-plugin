@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <title>$i18n.getText("com.atex.jira.plugins.jira-github-comment-plugin.label")</title>
+    <meta name="decorator" content="atl.admin" />
+    <meta name="application-base-url" content="$applicationProperties.getBaseUrl()">
+    $webResourceManager.requireResource("com.atex.jira.plugins.jira-github-comment-plugin:resources")
+  </head>
+  <body>
+  <div>
+    #if($success && $success == 'success')<span class="success" style="font-size: 1.2em;">$i18n.getText("github-commentor.admin.success")</span>#end
+    <form id="admin" class="aui" method="POST">
+      <div>
+        <label for="commentUserId">$i18n.getText("github-commentor.admin.commentUserId")</label><br />
+        <input type="text" id="commentUserId" name="commentUserId" class="text" value="$!configuration.commentUserId" >
+        #if($commentUserId && $commentUserId == 'error')<span class="error">$i18n.getText("github-commentor.admin.error.commentUserId")</span>#end
+      </div>
+      <div>
+        <label for="secretKey">$i18n.getText("github-commentor.admin.secretKey")</label><br />
+        <input type="text" id="secretKey" name="secretKey" class="text" value="$!configuration.secretKey" />
+        #if($secretKey && $secretKey == 'error')<span class="error">$i18n.getText("github-commentor.admin.error.secretKey")</span>#end
+      </div>
+      <div>
+        <label for="cropPrefix">$i18n.getText("github-commentor.admin.cropPrefix")</label><br />
+        <input type="text" id="cropPrefix" name="cropPrefix" class="text" value="$!configuration.cropPrefix" >
+        #if($cropPrefix == 'error')<span class="error">$i18n.getText("github-commentor.admin.error.cropPrefix")</span>#end
+      </div>
+      <div>
+        <label for="gitWebServer">$i18n.getText("github-commentor.admin.gitWebServer")</label><br />
+        <input type="text" id="gitWebServer" name="gitWebServer" class="text" value="$!configuration.gitWebServer" />
+        #if($gitWebServer == 'error')<span class="error">$i18n.getText("github-commentor.admin.error.gitWebServer")</span>#end
+      </div>
+      <div>
+        <label for="activate">$i18n.getText("github-commentor.admin.activate")</label><br />
+        <input type="checkbox" id="activate" name="activate" value="true" #if($configuration.activate)checked="checked"#end />
+      </div>
+      <div>
+        <input type="submit" value="$i18n.getText("github-commentor.admin.save")" class="button">
+      </div>
+    </form>
+    </div>
+  </body>
+</html>

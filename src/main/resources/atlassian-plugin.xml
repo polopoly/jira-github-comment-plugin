@@ -3,11 +3,25 @@
         <description>${project.description}</description>
         <version>${project.version}</version>
         <vendor name="${project.organization.name}" url="${project.organization.url}" />
+        <param name="configure.url">/plugins/servlet/githubcomment/configure</param>
     </plugin-info>
     
     <servlet name="GitHub Push Servlet" key="githubcomment" class="com.atex.jira.plugins.servlets.GitServlet">
         <description>Receive GitHub's POST JSON object upon push event </description>
         <url-pattern>/githubcomment</url-pattern>
     </servlet>    
+    <servlet key="configuration-servlet" class="com.atex.jira.plugins.servlets.ConfigurationServlet">
+      <url-pattern>/githubcomment/configure</url-pattern>
+    </servlet>
+	<resource type="i18n" name="i18n" location="languages/languages_en_GB" />
+    <component-import key="renderer" interface="com.atlassian.templaterenderer.velocity.one.six.VelocityTemplateRenderer" />
+    <component-import key="userManager" interface="com.atlassian.sal.api.user.UserManager" />
+    <component-import key="loginUriProvider" interface="com.atlassian.sal.api.auth.LoginUriProvider" />
+    <component-import key="transactionTemplate" interface="com.atlassian.sal.api.transaction.TransactionTemplate"/>
+    <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory"/>
     
+    <web-resource name="Admin Web Resources" key="resources">
+      <dependency>com.atlassian.auiplugin:ajs</dependency>
+      <resource type="download" name="config.css" location="config.css"/>
+    </web-resource>    
 </atlassian-plugin>
